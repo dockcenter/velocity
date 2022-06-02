@@ -33,7 +33,7 @@ With this image, you can create a new Velocity Minecraft proxy server with one c
 Here is an example:
 
 ```bash
-sudo docker run -p 25565:25565 dockcenter/velocity
+sudo docker run -p 25565:25565 dockcenter/velocity:stable
 ```
 
 While this command will work just fine in many cases, it is only the bare minimum required to start a functional server and can be vastly improved by specifying some options.
@@ -76,6 +76,30 @@ Using bind mount:
 ```bash
 -v </path/to/folders>:/data
 ```
+
+## Image Variants
+
+The `dockcenter/velocity` images come in many flavors, each designed for a specific use case.
+
+### `dockcenter/velocity:stable`
+
+This is the stable image.
+If you are unsure about what your needs are, you probably want to use this one.
+It is designed to be used both as a throw away container (mount your source code and start the container to start your app), as well as the base to build other images off of.
+
+### `dockcenter/velocity:latest`
+
+This is the development build of the image.
+Only use this image when you need the cutting edge features or want to try something new.
+
+**It is not recommended to run this image in production environment.**
+
+### `dockcenter/velocity:<version>-SNAPSHOT`
+
+This is the snapshot image for each development build. 
+The latest snapshot build is tagged `latest`.
+
+**It is not recommended to run these image in production environment.**
 
 ## LICENSE
 
