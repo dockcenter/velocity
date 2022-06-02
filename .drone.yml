@@ -16,6 +16,9 @@ steps:
     when:
       event:
         - cron
+        - push
+      branch:
+        - main
     environment:
       DRONE_SERVER: http://drone
       DRONE_TOKEN:
@@ -32,6 +35,9 @@ steps:
       event:
         exclude:
           - cron
+      branch:
+        exclude:
+          - main
     environment:
       DRONE_SERVER: http://drone
       DRONE_TOKEN:
@@ -45,7 +51,51 @@ steps:
       - sh scripts/promote.sh
 
 ---
+kind: pipeline
+type: kubernetes
+name: Publish
+trigger:
+  event:
+    - promote
+steps:
+  - name: Download velocity
+    image: alpine
+    commands:
+      - apk add --no-cache wget
+      - wget -P velocity/ $DOWNLOAD_URL
+  - name: Build Docker image
+    image: plugins/docker
+    when:
+      target:
+        - development
+    settings:
+      dockerfile: Dockerfile
+      dry_run: true
+      repo: dockcenter/velocity
+      tags: ${DOCKER_TAGS}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      mtu: 1440
+  - name: Publish Docker image
+    image: plugins/docker
+    when:
+      target:
+        exclude:
+          - development
+    settings:
+      dockerfile: Dockerfile
+      repo: dockcenter/velocity
+      tags: ${DOCKER_TAGS}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      mtu: 1440
+
+---
 kind: signature
-hmac: 143e3335bb1b95b4ca77793eb2d0ebf9e7ea6a38e62a4ca9b6d387ce9c7eb10b
+hmac: 0c2f0f7e56011d7a5b12e6d2c63b506935238c592865be2ad79d8f0563d0fbaf
 
 ...
