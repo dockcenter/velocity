@@ -16,6 +16,9 @@ steps:
     when:
       event:
         - cron
+        - push
+      branch:
+        - main
     environment:
       DRONE_SERVER: http://drone
       DRONE_TOKEN:
@@ -32,6 +35,9 @@ steps:
       event:
         exclude:
           - cron
+      branch:
+        exclude:
+          - main
     environment:
       DRONE_SERVER: http://drone
       DRONE_TOKEN:
@@ -90,6 +96,6 @@ steps:
 
 ---
 kind: signature
-hmac: 1a36c81bfa655eb9c7102a9180421467ff1b81d784e1d430238b84dfdd088632
+hmac: 0c2f0f7e56011d7a5b12e6d2c63b506935238c592865be2ad79d8f0563d0fbaf
 
 ...
