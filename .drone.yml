@@ -45,7 +45,54 @@ steps:
       - sh scripts/promote.sh
 
 ---
+kind: pipeline
+type: kubernetes
+name: Publish
+trigger:
+  event:
+    - promote
+steps:
+  - name: Download velocity
+    image: busybox:stable
+    commands:
+      - wget -P velocity/ $DOWNLOAD_URL
+  - name: Build Docker image
+    image: plugins/docker
+    when:
+      target:
+        - development
+    settings:
+      dockerfile: Dockerfile
+      dry_run: true
+      repo: dockcenter/velocity
+      tags: ${DOCKER_TAGS}
+      build_args_from_env:
+        - DOWNLOAD_URL
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      mtu: 1440
+  - name: Publish Docker image
+    image: plugins/docker
+    when:
+      target:
+        exclude:
+          - development
+    settings:
+      dockerfile: Dockerfile
+      repo: dockcenter/velocity
+      tags: ${DOCKER_TAGS}
+      build_args_from_env:
+        - DOWNLOAD_URL
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      mtu: 1440
+
+---
 kind: signature
-hmac: 143e3335bb1b95b4ca77793eb2d0ebf9e7ea6a38e62a4ca9b6d387ce9c7eb10b
+hmac: 563402d487604b8dfe12054d4e99f81d8eca588fe6ab79513aed1e45a0b710c9
 
 ...
