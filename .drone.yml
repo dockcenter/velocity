@@ -1,0 +1,51 @@
+---
+kind: pipeline
+type: kubernetes
+name: Discover Velocity releases
+trigger:
+  event:
+    exclude:
+      - promote
+steps:
+  - name: Build
+    image: golang:1.18.2-alpine
+    commands:
+      - go build -o bin/discover github.com/dockcenter/velocity/cmd/discover
+  - name: Discover releases
+    image: alpine
+    when:
+      event:
+        - cron
+    environment:
+      DRONE_SERVER: http://drone
+      DRONE_TOKEN:
+        from_secret: drone_token
+    commands:
+      - apk --no-cache add curl tar
+      - curl -L https://github.com/harness/drone-cli/releases/latest/download/drone_linux_amd64.tar.gz | tar zx
+      - install -t /usr/local/bin drone
+      - bin/discover
+      - sh scripts/promote.sh
+  - name: Discover releases (dry run)
+    image: alpine
+    when:
+      event:
+        exclude:
+          - cron
+    environment:
+      DRONE_SERVER: http://drone
+      DRONE_TOKEN:
+        from_secret: drone_token
+      DRY_RUN: true
+    commands:
+      - apk --no-cache add curl tar
+      - curl -L https://github.com/harness/drone-cli/releases/latest/download/drone_linux_amd64.tar.gz | tar zx
+      - install -t /usr/local/bin drone
+      - bin/discover
+      - sh scripts/promote.sh
+
+---
+kind: signature
+hmac: 143e3335bb1b95b4ca77793eb2d0ebf9e7ea6a38e62a4ca9b6d387ce9c7eb10b
+
+...
