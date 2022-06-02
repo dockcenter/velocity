@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func GetAllTags(repository string) []DockerTag {
+func GetExistingTags(repository string) []DockerTag {
 	client := resty.New()
 	url := fmt.Sprintf("https://registry.hub.docker.com/v2/repositories/%s/tags", repository)
 
@@ -30,8 +30,8 @@ func GetAllTags(repository string) []DockerTag {
 	return tags
 }
 
-func GetTagName(version string, build int) string {
-	return fmt.Sprintf("%s-r%d", version, build)
+func GetUniqueTag(version string, build int) string {
+	return fmt.Sprintf("%s-%d", version, build)
 }
 
 type DockerTagsResponse struct {
