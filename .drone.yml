@@ -53,8 +53,9 @@ trigger:
     - promote
 steps:
   - name: Download velocity
-    image: busybox:stable
+    image: alpine
     commands:
+      - apk add --no-cache wget
       - wget -P velocity/ $DOWNLOAD_URL
   - name: Build Docker image
     image: plugins/docker
@@ -93,6 +94,6 @@ steps:
 
 ---
 kind: signature
-hmac: 563402d487604b8dfe12054d4e99f81d8eca588fe6ab79513aed1e45a0b710c9
+hmac: 4bd2bf89b4c14bf948413e306b272594419cd2391763293e6d4862d8d3465e89
 
 ...
