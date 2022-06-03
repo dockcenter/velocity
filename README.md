@@ -33,7 +33,7 @@ With this image, you can create a new Velocity Minecraft proxy server with one c
 Here is an example:
 
 ```bash
-sudo docker run -p 25565:25565 dockcenter/velocity:stable
+sudo docker run -p 25577:25577 dockcenter/velocity:stable
 ```
 
 While this command will work just fine in many cases, it is only the bare minimum required to start a functional server and can be vastly improved by specifying some options.
