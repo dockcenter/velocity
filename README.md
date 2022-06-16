@@ -1,11 +1,11 @@
 # Velocity Automatically Built Docker Image
 
-[![Build Status](https://github.drone.webzyno.com/api/badges/dockcenter/velocity/status.svg)](https://github.drone.webzyno.com/dockcenter/velocity)
+[![Watch velocity release](https://github.com/dockcenter/velocity/actions/workflows/watch-releases.yaml/badge.svg)](https://github.com/dockcenter/velocity/actions/workflows/watch-releases.yaml)
 [![GitHub](https://img.shields.io/github/license/dockcenter/velocity?color=informational)](https://github.com/dockcenter/velocity/blob/main/LICENSE)
 
 This is a [Velocity](https://velocitypowered.com/) docker image with optimized Java flag provided by official [docs](https://velocitypowered.com/wiki/users/getting-started/).
 
-We use [dedicated CI server](https://github.drone.webzyno.com/dockcenter/velocity) to track Velocity builds and automatically build Docker image.
+We use [GitHub Actions](https://github.com/dockcenter/velocity/actions) to track Velocity builds and automatically build Docker image.
 
 ## What is Velocity?
 

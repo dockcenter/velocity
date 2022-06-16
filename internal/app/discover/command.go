@@ -1,9 +1,17 @@
 package discover
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
-func BuildCommand(promotion Promotion) string {
-	return fmt.Sprintf("drone build promote \"$DRONE_REPO\" \"$DRONE_BUILD_NUMBER\" %s --param=DOWNLOAD_URL=%s --param=DOCKER_TAGS=%s", promotion.Environment, promotion.DownloadURL, promotion.DockerTags)
+func BuildCommand(workflow string, promotion Promotion) string {
+	// Convert promotion to json
+	jsonBytes, err := json.Marshal(promotion)
+	if err != nil {
+		panic(err)
+	}
+	jsonStr := string(jsonBytes)
+
+	return fmt.Sprintf("echo '%s' | gh workflow run %s --json", jsonStr, workflow)
 }

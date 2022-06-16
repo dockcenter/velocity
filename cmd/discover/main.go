@@ -7,13 +7,13 @@ import (
 	"github.com/go-resty/resty/v2"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func main() {
 	// Parse environment variables
-	event := os.Getenv("DRONE_BUILD_EVENT")
-	branch := os.Getenv("DRONE_BRANCH")
-	environment := os.Getenv("ENVIRONMENT")
+	event := os.Getenv("GITHUB_EVENT_NAME")
+	branch := os.Getenv("GITHUB_REF_NAME")
 	dryRunStr := os.Getenv("DRY_RUN")
 	dryRun, err := strconv.ParseBool(dryRunStr)
 	if err != nil {
@@ -51,18 +51,18 @@ func main() {
 	} else {
 		eventForPromotions = Cron
 	}
-	promotions := BuildPromotions(versionFamilyBuilds.Builds, tags, eventForPromotions, environment)
+	promotions := BuildPromotions(versionFamilyBuilds.Builds, tags, eventForPromotions)
 
 	// Print tags to promotion
-	fmt.Println("\nTags to promote:")
+	fmt.Println("\nTags to build:")
 	for _, promotion := range promotions {
-		fmt.Println(promotion.DockerTags)
+		fmt.Println(strings.Join(strings.Split(promotion.DockerTags, "\\n"), ","))
 	}
 
 	// Build promote commands and write to scripts/promote.sh
 	cmd := "#!/bin/sh\n\n"
 	for _, promotion := range promotions {
-		cmd += BuildCommand(promotion) + "\n"
+		cmd += BuildCommand(DockerBuildWorkflow, promotion) + "\n"
 	}
 
 	// Create scripts folder
@@ -72,23 +72,23 @@ func main() {
 	}
 
 	if dryRun {
-		// Create empty scripts/promote.sh
-		err := os.WriteFile("scripts/promote.sh", []byte("#!/bin/sh\n"), 0700)
+		// Create empty scripts/dispatch.sh
+		err := os.WriteFile("scripts/dispatch.sh", []byte("#!/bin/sh\n"), 0700)
 		if err != nil {
 			panic(err)
 		}
 
 		// print scripts content
 		fmt.Println("\nThis is a dry run")
-		fmt.Println("We generate the following script but not write to scripts/promote.sh")
+		fmt.Println("We generate the following script but not write to scripts/dispatch.sh")
 		fmt.Println("\n" + cmd)
 	} else {
-		// Write to scripts/promote.sh
-		err = os.WriteFile("scripts/promote.sh", []byte(cmd), 0700)
+		// Write to scripts/dispatch.sh
+		err = os.WriteFile("scripts/dispatch.sh", []byte(cmd), 0700)
 		if err != nil {
 			panic(err)
 		}
 
-		fmt.Println("\nShell script has been generated to scripts/promote.sh")
+		fmt.Println("\nShell script has been generated to scripts/dispatch.sh")
 	}
 }
