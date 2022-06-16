@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Download velocity jar
+        run: wget -P velocity/ ${{ inputs.downloadURL }}
       - name: Docker meta
         id: docker_meta
         uses: docker/metadata-action@v4
@@ -41,8 +43,6 @@ jobs:
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
-          build-args: |
-            DOWNLOAD_URL=${{ inputs.downloadURL }}
       - name: Summary
         run: |
           echo "## Image tags" >> $GITHUB_STEP_SUMMARY
