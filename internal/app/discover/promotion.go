@@ -16,12 +16,11 @@ const (
 )
 
 type Promotion struct {
-	Environment string
-	DownloadURL string
-	DockerTags  string
+	DownloadURL string `json:"downloadURL"`
+	DockerTags  string `json:"tags"`
 }
 
-func BuildPromotions(builds []VersionFamilyBuild, existingTags []string, event Event, environment string) []Promotion {
+func BuildPromotions(builds []VersionFamilyBuild, existingTags []string, event Event) []Promotion {
 	var notExistingTags []int
 	sharedTags := make(map[string]int)
 
@@ -87,12 +86,6 @@ func BuildPromotions(builds []VersionFamilyBuild, existingTags []string, event E
 	for _, index := range promotedBuildIndex {
 		build := builds[index]
 
-		// If environment is not specified, use version as environment name
-		promotionEnvironment := environment
-		if environment == "" {
-			promotionEnvironment = build.Version
-		}
-
 		// Build docker tags
 		var tags []string
 		tags = append(tags, GetUniqueTag(build.Version, build.Build))
@@ -103,9 +96,8 @@ func BuildPromotions(builds []VersionFamilyBuild, existingTags []string, event E
 		}
 
 		promotion := Promotion{
-			Environment: promotionEnvironment,
 			DownloadURL: fmt.Sprintf("https://api.papermc.io/v2/projects/%s/versions/%s/builds/%d/downloads/%s", PROJECT, build.Version, build.Build, build.Downloads[DownloadsKey].Name),
-			DockerTags:  strings.Join(tags, ","),
+			DockerTags:  strings.Join(tags, "\\n"),
 		}
 		promotions = append(promotions, promotion)
 	}
